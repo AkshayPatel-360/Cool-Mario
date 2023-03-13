@@ -17,10 +17,6 @@ void AMovingPlatform::BeginPlay()
 	Super::BeginPlay();
 	
 	StartLocation = GetActorLocation();
-
-    UE_LOG(LogTemp,Display,TEXT("Akki's platform"));
-	UE_LOG(LogTemp,Error,TEXT("Akki's platform"));
-	UE_LOG(LogTemp,Display,TEXT("Platform Move Distance : %f"),MoveDistance);
 	
 }
 
@@ -29,27 +25,40 @@ void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// get current location
-	FVector CurrentLocation = GetActorLocation();
-	// increase current location in x axis
-	CurrentLocation = CurrentLocation + PlatformVelocity * DeltaTime;
-	//set current location in x axis
-	SetActorLocation(CurrentLocation);
+	MovePlatform(DeltaTime);
+	RotatePlatform(DeltaTime);
+}
+
+void AMovingPlatform::MovePlatform(float DeltaTime)
+{
 	
-	float DistanceFromStartLocation = FVector::Dist(StartLocation,CurrentLocation);
-	if (DistanceFromStartLocation > MoveDistance)
+	if (ShouldPlatformReturn())
 	{
 		FVector MoveDirection = PlatformVelocity.GetSafeNormal();
 		StartLocation = StartLocation + MoveDirection * MoveDistance;
 		SetActorLocation(StartLocation);
 		PlatformVelocity = -PlatformVelocity;
 	}
-	
-
-	
-
-	
-	
-
+	else
+	{
+		FVector CurrentLocation = GetActorLocation();
+		CurrentLocation = CurrentLocation + PlatformVelocity * DeltaTime;
+		SetActorLocation(CurrentLocation);
+	}
 }
 
+void AMovingPlatform::RotatePlatform(float DeltaTime)
+{
+	AddActorLocalRotation(RotationVelocity * DeltaTime);
+}
+
+bool AMovingPlatform::ShouldPlatformReturn() const
+{
+	return GetDistanceMoved() > MoveDistance;
+}
+
+
+float AMovingPlatform::GetDistanceMoved() const
+{
+	return  FVector::Dist(StartLocation,GetActorLocation());
+}
