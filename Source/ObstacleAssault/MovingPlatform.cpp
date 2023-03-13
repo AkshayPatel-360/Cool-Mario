@@ -18,7 +18,10 @@ void AMovingPlatform::BeginPlay()
 	
 	StartLocation = GetActorLocation();
 
-    
+    UE_LOG(LogTemp,Display,TEXT("Akki's platform"));
+	UE_LOG(LogTemp,Error,TEXT("Akki's platform"));
+	UE_LOG(LogTemp,Display,TEXT("Platform Move Distance : %f"),MoveDistance);
+	
 }
 
 // Called every frame
